@@ -44,7 +44,12 @@ def update_order_item_extra_put(order_id: int, order_item_id: int, order_item_ex
 @router.get("", response_model=List[OrderItemExtra])
 def read_order_item_extras(order_id: int, order_item_id: int, skip: int = 0, limit: int = 100,
                            db: Session = Depends(get_db)):
-    return order_item_extras.get_by_order_item_id(db, order_item_id=order_item_id, skip=skip, limit=limit)
+    instances = order_item_extras.get_by_order_item_id(
+        db, order_item_id=order_item_id, skip=skip, limit=limit)
+    if instances is None:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
+    return instances
 
 
 @router.get("/{order_item_extra_id}", response_model=OrderItemExtra)
@@ -61,6 +66,9 @@ def read_order_item_extra(order_id: int, order_item_id: int, order_item_extra_id
 def delete_order_item_extras(order_id: int, order_item_id: int, db: Session = Depends(get_db)):
     rows = order_item_extras.delete_by_order_item_id(
         db, order_item_id=order_item_id)
+    if rows == 0:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
     return rows
 
 

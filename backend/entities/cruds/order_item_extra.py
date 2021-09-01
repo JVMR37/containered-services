@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from sqlalchemy.orm import Session
 
 from backend.entities.database.models import OrderItemExtra as dbOrderItemExtra
+from backend.entities.database.models import OrderItem as dbOrderItem
 from backend.entities.serializers import OrderItemExtraCreate
 
 
@@ -12,9 +15,13 @@ def get_all(db: Session, skip: int = 0, limit: int = 100):
     return db.query(dbOrderItemExtra).offset(skip).limit(limit).all()
 
 
-def get_by_order_item_id(db: Session, order_item_id: int, skip: int = 0, limit: int = 100):
-    return db.query(dbOrderItemExtra).filter(dbOrderItemExtra.order_item_id == order_item_id)\
-        .offset(skip).limit(limit).all()
+def get_by_order_item_id(db: Session, order_item_id: int, skip: int = 0, limit: int = 100) -> dbOrderItem | None:
+    order_item = db.query(dbOrderItem).filter(
+        dbOrderItem.id == order_item_id).first()
+    if order_item is None:
+        return None
+
+    return order_item.extras
 
 
 def create(db: Session, order_item_id: int, order_item_extra: OrderItemExtraCreate):
