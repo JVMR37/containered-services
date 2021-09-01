@@ -22,7 +22,12 @@ def create_order(order: OrderCreate,  db: Session = Depends(get_db)):
 
 @router.patch("/{order_id}", response_model=int)
 def update_order(order: OrderUpdate, order_id: int, db: Session = Depends(get_db)):
-    return orders.update_by_id(db, order=order, order_id=order_id)
+    rows = orders.update_by_id(db, order=order, order_id=order_id)
+
+    if rows == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return rows
 
 
 @router.get("", response_model=List[Order])
