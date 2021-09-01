@@ -2,4 +2,4 @@
 __pycache__/
 storage.db
 .vscode/
-containered-services/
+.env
