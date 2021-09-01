@@ -1,99 +1,22 @@
-# fastapi-big-project-template
+# containered-services
 
-## Files structure
+## Basic configuration
+Create a `.env` file in the root of the project and add a `DATABASE_URL` variable,
+with the URL to access your database, following the
+[SQLAlchemy Database Urls](https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls) specifications.
+
+Ps.: Check the .env.template file for examples with SQLite Databases,
+and PostgreSQL databases
+
+## Installing requirements
+Open a terminal in the root of the project, then type the following command:
 ```
-.
-├── app
-│   ├── crud
-│   │   ├── __init__.py
-│   │   ├── items.py
-│   │   ├── order_items.py
-│   │   └── orders.py
-│   ├── dependencies.py
-│   ├── entities
-│   │   ├── database.py
-│   │   ├── __init__.py
-│   │   ├── models
-│   │   │   ├── __init__.py
-│   │   │   ├── item.py
-│   │   │   ├── order_item.py
-│   │   │   └── order.py
-│   │   └── schemas
-│   │       ├── __init__.py
-│   │       ├── item.py
-│   │       ├── order_item.py
-│   │       └── order.py
-│   ├── __init__.py
-│   ├── main.py
-│   └── routers
-│       ├── __init__.py
-│       ├── items.py
-│       ├── order_items.py
-│       └── orders.py
-├── README.md
-└── storage.db
-
-6 directories, 23 files
+pip install -r requirements.txt
 ```
+Ps.: It is recommended that you use a [virtual environment](https://docs.python.org/3/library/venv.html#creating-virtual-environments).
 
-## Files structure with comments
-
+## Starting the server
+Open a terminal in the root of the project, then type the following command:
+```properties
+uvicorn main:app
 ```
-.
-├── app                        # main application package
-│   ├── __init__.py
-│   ├── dependencies.py        # routers dependencies
-│   ├── main.py                # main app
-|   |
-│   ├── crud                   # package with models CRUD
-│   │   ├── __init__.py
-│   │   ├── items.py           # model CRUD
-│   │   ├── order_items.py     # model CRUD
-│   │   └── orders.py          # model CRUD
-|   |
-│   ├── entities               # package with database and pydantic entities
-│   │   ├── __init__.py
-│   │   ├── database.py        # database configuration
-|   |   |
-│   │   ├── models             # package with database entities
-│   │   │   ├── __init__.py    ### imports all database models for quick access
-│   │   │   ├── item.py        # database model
-│   │   │   ├── order_item.py  # database model
-│   │   │   └── order.py       # database model
-|   |   |
-│   │   └── schemas            # package with pydantic entities
-│   │       ├── __init__.py    ### imports all pydantic models for quick access
-│   │       ├── item.py        # pydantic model
-│   │       ├── order_item.py  # pydantic model
-│   │       └── order.py       # pydantic model
-|   |
-│   └── routers                # package with routers
-│       ├── __init__.py
-│       ├── items.py           # router that manages item entity
-│       ├── order_items.py     # router that manages order_item entity
-│       └── orders.py          # router that manages order entity
-|
-├── README.md
-└── storage.db
-
-6 directories, 23 files
-```
-
-# How to add more entities
-## 1. Database model
-1. Create a file in the package _app/entities/models/_ representing your database model
-2. Import your new model inside _app/entities/models/\_\_init\_\_.py_
-
-## 2. Pydantic model
-1. Create a file in the package _app/entities/schemas/_ representing your pydantic model
-2. Import your new model inside _app/entities/schemas/\_\_init\_\_.py_
-
-## 3. CRUD
-1. Create a new file in the package _app/crud/_ representing your new model CRUD 
-
-## 4. Router
-1. Create a new file in the package _app/routers/_ with an APIRouter object
-2. Create the routes of the new model using the APIRouter object
-
-# How to add more dependencies
-1. Create the dependency function in the file _dependencies.py_
