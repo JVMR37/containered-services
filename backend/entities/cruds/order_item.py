@@ -1,3 +1,4 @@
+import sqlalchemy
 from sqlalchemy.orm import Session
 
 from backend.entities.database.models import OrderItem as dbOrderItem
@@ -21,12 +22,16 @@ def get_by_order_id(db: Session, order_id: int, skip: int = 0, limit: int = 100)
 
 
 def create(db: Session, order_id: int, order_item: OrderItemCreate):
-    instance = dbOrderItem(order_id=order_id, item_id=order_item.item_id, amount=order_item.amount,
-                           notes=order_item.notes, combo=order_item.combo)
-    db.add(instance)
-    db.commit()
-    db.refresh(instance)
-    return instance
+    try:
+        instance = dbOrderItem(order_id=order_id, item_id=order_item.item_id, amount=order_item.amount,
+                               notes=order_item.notes, combo=order_item.combo)
+        db.add(instance)
+        db.commit()
+        db.refresh(instance)
+        return instance
+
+    except sqlalchemy.exc.IntegrityError as e:
+        return None
 
 
 def update_by_id(db: Session, order_item_id: int, order_item: OrderItemCreate):

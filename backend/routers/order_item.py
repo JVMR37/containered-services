@@ -17,7 +17,12 @@ router = APIRouter(
 
 @router.post("", response_model=OrderItem)
 def create_order_item(order_id: int, order_item: OrderItemCreate, db: Session = Depends(get_db)):
-    return order_items.create(db, order_id, order_item)
+    instance = order_items.create(db, order_id, order_item)
+    if instance is None:
+        raise HTTPException(
+            status_code=404, detail="Check the order id and the item id")
+
+    return instance
 
 
 @router.put("", response_model=OrderItem)
@@ -28,13 +33,23 @@ def create_order_item_put(order_id: int, order_item: OrderItemCreate, db: Sessio
 @router.patch("/{order_item_id}", response_model=int)
 def update_order_item(order_id: int, order_item_id: int, order_item: OrderItemCreate,
                       db: Session = Depends(get_db)):
-    return order_items.update_by_id(db, order_item_id=order_item_id, order_item=order_item)
+    rows = order_items.update_by_id(
+        db, order_item_id=order_item_id, order_item=order_item)
+    if rows == 0:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
+    return rows
 
 
 @router.put("/{order_item_id}", response_model=int)
 def update_order_item_put(order_id: int, order_item_id: int, order_item: OrderItemCreate,
                           db: Session = Depends(get_db)):
-    return order_items.update_by_id(db, order_item_id=order_item_id, order_item=order_item)
+    rows = order_items.update_by_id(
+        db, order_item_id=order_item_id, order_item=order_item)
+    if rows == 0:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
+    return rows
 
 
 @router.get("", response_model=List[OrderItem])
@@ -59,6 +74,9 @@ def read_order_item(order_id: int, order_item_id: int, db: Session = Depends(get
 @router.delete("", response_model=int)
 def delete_order_items(order_id: int, db: Session = Depends(get_db)):
     rows = order_items.delete_by_order_id(db, order_id=order_id)
+    if rows == 0:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
     return rows
 
 
