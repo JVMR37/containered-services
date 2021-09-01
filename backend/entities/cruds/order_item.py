@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from backend.entities.database.models import OrderItem as dbOrderItem
+from backend.entities.database.models import Order as dbOrder
 from backend.entities.serializers import OrderItemCreate
 
 
@@ -13,7 +14,10 @@ def get_all(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_by_order_id(db: Session, order_id: int, skip: int = 0, limit: int = 100):
-    return db.query(dbOrderItem).filter(dbOrderItem.order_id == order_id).offset(skip).limit(limit).all()
+    order = db.query(dbOrder).filter(dbOrder.id == order_id).first()
+    if order is None:
+        return None
+    return order.items
 
 
 def create(db: Session, order_id: int, order_item: OrderItemCreate):

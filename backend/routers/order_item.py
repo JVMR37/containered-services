@@ -39,7 +39,12 @@ def update_order_item_put(order_id: int, order_item_id: int, order_item: OrderIt
 
 @router.get("", response_model=List[OrderItem])
 def read_order_items(order_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return order_items.get_by_order_id(db, order_id=order_id, skip=skip, limit=limit)
+    instances = order_items.get_by_order_id(
+        db, order_id=order_id, skip=skip, limit=limit)
+    if instances is None:
+        raise HTTPException(status_code=404, detail="OrderItem not found")
+
+    return instances
 
 
 @router.get("/{order_item_id}", response_model=OrderItem)
