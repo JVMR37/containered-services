@@ -4,3 +4,4 @@ import backend.entities.cruds.order as order
 import backend.entities.cruds.order_item as order_item
 import backend.entities.cruds.extra as extra
 import backend.entities.cruds.order_item_extra as order_item_extra
+import backend.entities.cruds.user as user
