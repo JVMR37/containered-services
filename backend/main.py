@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import router
 from backend.entities.database.config import engine, Base
+from backend.routers import router
 
 Base.metadata.create_all(bind=engine)
 
