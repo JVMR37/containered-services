@@ -41,3 +41,10 @@ Open a terminal in the root of the project, then type the following commands:
 docker-compose build
 docker-compose up
 ```
+
+
+## After the server started
+Open a terminal and run the following command to create an admin user:
+```properties
+python manage.py
+```
