@@ -3,9 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from backend.routers.dependencies import get_db
-from backend.entities.serializers import Item, ItemCreate
 from backend.entities.cruds import item as items
+from backend.entities.serializers import Item, ItemCreate
+from backend.routers.dependencies import get_db
+from backend.routers.user import RoleChecker
 
 router = APIRouter(
     prefix="/items",
@@ -15,8 +16,8 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=Item)
-def create_item(item: ItemCreate,  db: Session = Depends(get_db)):
+@router.post("", response_model=Item, dependencies=[Depends(RoleChecker(['admin']))])
+def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     return items.create(db, item=item)
 
 

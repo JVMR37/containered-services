@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime, timedelta
+from typing import Optional
 
 import sqlalchemy.exc
 from dotenv import load_dotenv
@@ -21,7 +22,6 @@ load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-secret-key')
 ALGORITHM = os.environ.get('ALGORITHM', 'HS256')
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES', 30))
-
 
 security = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -124,14 +124,23 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
-@router.post("/register", response_model=User)
-def register(user: UserCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if current_user.role != 'admin':
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Only admins can register new users."
-        )
+class RoleChecker:
+    def __init__(self, accessible_by_roles: Optional[list[str]] = None):
+        self.accessible_by_roles = accessible_by_roles
 
+    def __call__(self, current_user=Depends(get_current_user)):
+        current_user: User
+        if self.accessible_by_roles and current_user.role not in self.accessible_by_roles:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Only {self.accessible_by_roles} can do this action."
+            )
+
+        return current_user
+
+
+@router.post("/register", response_model=User, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
+def register(user: UserCreate, db: Session = Depends(get_db)):
     instance = dbUser(
         username=user.username,
         password=security.hash(user.password),
