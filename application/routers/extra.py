@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from application.routers.dependencies import get_db
 from application.entities.serializers import Extra, ExtraCreate
 from application.entities.cruds import extra as extras
+from application.routers.user import RoleChecker
+
 
 router = APIRouter(
     prefix="/extras",
@@ -15,12 +17,12 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=Extra)
+@router.post("", response_model=Extra, dependencies=[Depends(RoleChecker(['admin']))])
 def create_extra(extra: ExtraCreate,  db: Session = Depends(get_db)):
     return extras.create(db, extra=extra)
 
 
-@router.put("", response_model=Extra)
+@router.put("", response_model=Extra, dependencies=[Depends(RoleChecker(['admin']))])
 def create_extra_put(extra: ExtraCreate,  db: Session = Depends(get_db)):
     return extras.create(db, extra=extra)
 
@@ -39,7 +41,7 @@ def read_extra(extra_id: int, db: Session = Depends(get_db)):
     return instance
 
 
-@router.delete("/{extra_id}", response_model=Extra)
+@router.delete("/{extra_id}", response_model=Extra, dependencies=[Depends(RoleChecker(['admin']))])
 def delete_extra(extra_id: int, db: Session = Depends(get_db)):
     instance = extras.delete_by_id(db, extra_id=extra_id)
     if instance is None:
