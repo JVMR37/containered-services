@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from application.routers.dependencies import get_db
 from application.entities.serializers import OrderItemExtra, OrderItemExtraCreate
 from application.entities.cruds import order_item_extra as order_item_extras
+from application.routers.user import RoleChecker
 
 router = APIRouter(
     prefix="/orders/{order_id}/items/{order_item_id}/extras",
@@ -15,33 +16,33 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=OrderItemExtra)
+@router.post("", response_model=OrderItemExtra, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def create_order_item_extra(order_id: int, order_item_id: int, order_item_extra: OrderItemExtraCreate,
                             db: Session = Depends(get_db)):
     return order_item_extras.create(db, order_item_id=order_item_id, order_item_extra=order_item_extra)
 
 
-@router.put("", response_model=OrderItemExtra)
+@router.put("", response_model=OrderItemExtra, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def create_order_item_extra_put(order_id: int, order_item_id: int, order_item_extra: OrderItemExtraCreate,
                                 db: Session = Depends(get_db)):
     return order_item_extras.create(db, order_item_id=order_item_id, order_item_extra=order_item_extra)
 
 
-@router.patch("/{order_item_extra_id}", response_model=int)
+@router.patch("/{order_item_extra_id}", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def update_order_item_extra(order_id: int, order_item_id: int, order_item_extra_id: int,
                             order_item_extra: OrderItemExtraCreate, db: Session = Depends(get_db)):
     return order_item_extras.update_by_id(db, order_item_extra_id=order_item_extra_id,
                                           order_item_extra=order_item_extra)
 
 
-@router.put("/{order_item_extra_id}", response_model=int)
+@router.put("/{order_item_extra_id}", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def update_order_item_extra_put(order_id: int, order_item_id: int, order_item_extra_id: int,
                                 order_item_extra: OrderItemExtraCreate, db: Session = Depends(get_db)):
     return order_item_extras.update_by_id(db, order_item_extra_id=order_item_extra_id,
                                           order_item_extra=order_item_extra)
 
 
-@router.get("", response_model=List[OrderItemExtra])
+@router.get("", response_model=List[OrderItemExtra], dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def read_order_item_extras(order_id: int, order_item_id: int, skip: int = 0, limit: int = 100,
                            db: Session = Depends(get_db)):
     instances = order_item_extras.get_by_order_item_id(
@@ -52,7 +53,7 @@ def read_order_item_extras(order_id: int, order_item_id: int, skip: int = 0, lim
     return instances
 
 
-@router.get("/{order_item_extra_id}", response_model=OrderItemExtra)
+@router.get("/{order_item_extra_id}", response_model=OrderItemExtra, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def read_order_item_extra(order_id: int, order_item_id: int, order_item_extra_id: int, db: Session = Depends(get_db)):
     instance = order_item_extras.get_by_id(
         db, order_item_extra_id=order_item_extra_id)
@@ -62,7 +63,7 @@ def read_order_item_extra(order_id: int, order_item_id: int, order_item_extra_id
     return instance
 
 
-@router.delete("", response_model=int)
+@router.delete("", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def delete_order_item_extras(order_id: int, order_item_id: int, db: Session = Depends(get_db)):
     rows = order_item_extras.delete_by_order_item_id(
         db, order_item_id=order_item_id)
@@ -72,7 +73,7 @@ def delete_order_item_extras(order_id: int, order_item_id: int, db: Session = De
     return rows
 
 
-@router.delete("/{order_item_extra_id}", response_model=int)
+@router.delete("/{order_item_extra_id}", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def delete_order_item_extra(order_id: int, order_item_id: int, order_item_extra_id: int, db: Session = Depends(get_db)):
     rows = order_item_extras.delete_by_id(
         db, order_item_extra_id=order_item_extra_id)

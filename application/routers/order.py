@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from application.routers.dependencies import get_db
 from application.entities.serializers import Order, OrderCreate, OrderUpdate
 from application.entities.cruds import order as orders
+from application.routers.user import RoleChecker
 
 router = APIRouter(
     prefix="/orders",
@@ -15,12 +16,12 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=Order)
+@router.post("", response_model=Order, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def create_order(order: OrderCreate,  db: Session = Depends(get_db)):
     return orders.create(db, order=order)
 
 
-@router.patch("/{order_id}", response_model=int)
+@router.patch("/{order_id}", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def update_order(order: OrderUpdate, order_id: int, db: Session = Depends(get_db)):
     rows = orders.update_by_id(db, order=order, order_id=order_id)
 
@@ -30,12 +31,12 @@ def update_order(order: OrderUpdate, order_id: int, db: Session = Depends(get_db
     return rows
 
 
-@router.get("", response_model=List[Order])
+@router.get("", response_model=List[Order], dependencies=[Depends(RoleChecker(['admin', 'caixa', 'cozinheiro']))])
 def read_orders(skip: int = 0, limit: int = 100, done: Optional[bool] = None, db: Session = Depends(get_db)):
     return orders.get_all(db, skip=skip, limit=limit, done=done)
 
 
-@router.get("/{order_id}", response_model=Order)
+@router.get("/{order_id}", response_model=Order, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def read_order(order_id: int, db: Session = Depends(get_db)):
     instance = orders.get_by_id(db, order_id=order_id)
     if instance is None:
@@ -44,7 +45,7 @@ def read_order(order_id: int, db: Session = Depends(get_db)):
     return instance
 
 
-@router.delete("/{order_id}", response_model=int)
+@router.delete("/{order_id}", response_model=int, dependencies=[Depends(RoleChecker(['admin', 'caixa']))])
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     rows = orders.delete_by_id(db, order_id=order_id)
 

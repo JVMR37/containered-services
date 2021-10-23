@@ -35,7 +35,7 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     return instance
 
 
-@router.delete("/{item_id}", response_model=Item)
+@router.delete("/{item_id}", response_model=Item,  dependencies=[Depends(RoleChecker(['admin']))])
 def delete_item(item_id: int, db: Session = Depends(get_db)):
     instance = items.delete_by_id(db, item_id=item_id)
     if instance is None:
